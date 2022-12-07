@@ -17,7 +17,6 @@
 header {
   line-height: 1.5;
   max-height: 100vh;
-  border: 2px solid red;
 }
 
 .logo {
@@ -36,7 +35,6 @@ nav {
 nav a.router-link-exact-active {
   color: var(--color-text);
 }
-
 nav a.router-link-exact-active:hover {
   background-color: transparent;
 }
@@ -60,7 +58,7 @@ nav a:first-of-type {
   }
 
   .logo {
-    margin: 2rem;
+    margin: 1rem;
   }
 
   header .wrapper {
