@@ -9,26 +9,23 @@ const emit = defineEmits(["clear-completed", "filter-todos"]);
 import { useTodoStore } from "@/stores/todo";
 import { storeToRefs } from "pinia";
 const store = useTodoStore();
-const { todos } = storeToRefs(store);
+const { todos, getLeftItems } = storeToRefs(store);
 
 //FUNCTIONS
 const clearCompleted = () => {
   emit("clear-completed");
 };
-const sendFilterTodosEmit = (data: String) => {
-  emit("filter-todos", data.toLowerCase());
-};
 
 //COMPUTED
-const numberOfItemsLeft = computed((): String => {
-  if (todos.value.length - store.numberOfDoneRestaurants <= 1) {
-    return `${todos.value.length - store.numberOfDoneRestaurants} item left`;
+const leftItems = computed((): String => {
+  if (getLeftItems.value > 1) {
+    return `${getLeftItems.value} items left`;
   } else {
-    return `${todos.value.length - store.numberOfDoneRestaurants} items left`;
+    return `${getLeftItems.value} item left`;
   }
 });
 const showClearCompletedBtn = computed((): Object => {
-  return store.numberOfDoneRestaurants > 0
+  return todos.value.filter((todo) => todo.isDone).length > 0
     ? { visibility: "visible" }
     : { visibility: "hidden" };
 });
@@ -36,16 +33,16 @@ const showClearCompletedBtn = computed((): Object => {
 
 <template>
   <footer class="footer-container">
-    <div>{{ numberOfItemsLeft }}</div>
+    <div>{{ leftItems }}</div>
     <ul class="list-container">
       <li class="filter">
-        <a @click="sendFilterTodosEmit('all')" href="#">All</a>
+        <a @click="store.setFilter('all')" href="#">All</a>
       </li>
       <li class="filter">
-        <a @click="sendFilterTodosEmit('active')" href="#">Active</a>
+        <a @click="store.setFilter('active')" href="#">Active</a>
       </li>
       <li class="filter">
-        <a @click="sendFilterTodosEmit('completed')" href="#">Completed</a>
+        <a @click="store.setFilter('completed')" href="#">Completed</a>
       </li>
     </ul>
     <button class="btn" :style="showClearCompletedBtn" @click="clearCompleted">

@@ -55,7 +55,7 @@ const editTodo = (todo: Todo) => {
   editedValue.value = "";
   isInputEditing.value = !isInputEditing.value;
 };
-const setTodoToDone = (todo: Todo) => {
+const toggleTodoToDone = (todo: Todo) => {
   emit("set-todo-to-done", todo.id);
 };
 const setIsInputEditing = () => {
@@ -63,9 +63,6 @@ const setIsInputEditing = () => {
 };
 const displayEditingInput = () => {
   isInputEditing.value = !isInputEditing.value;
-};
-const sendFilterTodosEmit = (value: String) => {
-  emit("filter-todos", value);
 };
 </script>
 
@@ -92,7 +89,7 @@ const sendFilterTodosEmit = (value: String) => {
         <div
           :class="{ green: todo.isDone }"
           class="done-icon"
-          @click="setTodoToDone(todo)"
+          @click="toggleTodoToDone(todo)"
         ></div>
         <span
           @dbclick="displayEditingInput"
@@ -112,7 +109,6 @@ const sendFilterTodosEmit = (value: String) => {
       </li>
     </ul>
     <TodoListFooter
-      @filter-todos="sendFilterTodosEmit"
       @clear-completed="clearCompleted"
     />
   </section>
@@ -134,7 +130,7 @@ const sendFilterTodosEmit = (value: String) => {
   padding: 16px 16px 16px 60px;
   border: none;
   background: rgba(0, 0, 0, 0.003);
-  box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
+  box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
   font-size: 24px;
   line-height: 1.4em;
 }

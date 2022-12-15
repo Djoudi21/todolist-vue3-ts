@@ -6,36 +6,40 @@ export const useTodoStore = defineStore("TodoStore", {
     todos: [],
     completedTodos: [],
     activeTodos: [],
+    filter: "",
   }),
   getters: {
-    numberOfDoneRestaurants: (state): number => {
-      return 3;
-      // return state.filteredTodos.length;
+    getTodos: (state: StateShape): Todo[] => {
+      if (state.filter === "active") {
+        state.activeTodos = state.todos.filter((todo) => !todo.isDone);
+        return state.activeTodos;
+      } else if (state.filter === "completed") {
+        state.completedTodos = state.todos.filter((todo) => todo.isDone);
+        return state.completedTodos;
+      } else {
+        return state.todos;
+      }
     },
-    getActiveTodos: (state: StateShape): Todo[] => {
-      state.activeTodos = state.todos.filter((todo) => !todo.isDone);
-      return state.activeTodos;
-    },
-    getCompletedTodos: (state: StateShape): Todo[] => {
-      state.completedTodos = state.todos.filter((todo) => todo.isDone);
-      return state.completedTodos;
-    },
-    getAllTodos: (state: StateShape): Todo[] => {
-      return state.todos;
+    getLeftItems: (state: StateShape): Number => {
+      return state.todos.filter((todo) => !todo.isDone).length;
     },
   },
   actions: {
     addTodo(payload: Todo) {
       this.todos.push(payload);
     },
-    setTodoToDone(payload: String) {
+    toggleTodoToDone(payload: String) {
       const todoToSetToDone: any = this.todos.find(
         (todo) => todo.id === payload
       );
-      if (todoToSetToDone !== undefined) todoToSetToDone.isDone = true;
+      if (todoToSetToDone !== undefined)
+        todoToSetToDone.isDone = !todoToSetToDone.isDone;
     },
     clearCompleted() {
       this.todos = this.todos.filter((todo) => !todo.isDone);
+    },
+    setFilter(filter: String) {
+      this.filter = filter;
     },
   },
 });

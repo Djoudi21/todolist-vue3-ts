@@ -9,4 +9,5 @@ export type StateShape = {
   completedTodos: Todo[];
   todos: Todo[];
   activeTodos: Todo[];
+  filter: String;
 };
