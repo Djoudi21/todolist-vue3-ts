@@ -1,21 +1,49 @@
 <script setup lang="ts">
-import type { Todo } from "@/types";
+//DEPENDENCIES
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
-const emit = defineEmits(["delete-todo", "add-todo", "edit-todo"]);
 
+//TYPES IMPORTS
+import type { Todo } from "@/types";
+
+//COMPONENTS IMPORTS
+import TodoListFooter from "@/components/TodoListFooter.vue";
+
+//DEFINE FUNCTIONS
+const emit = defineEmits<{
+  (e: "filter-todos", value: String): void;
+  (e: "clear-completed"): void;
+  (e: "set-todo-to-done", value: String): void;
+  (e: "add-todo", value: Todo): void;
+  (e: "delete-todo", value: Todo): void;
+  (e: "edit-todo", value: Todo): void;
+}>();
+
+const props = defineProps({
+  todos: {
+    type: Array,
+    required: true,
+  },
+});
+
+//REFS
 let inputValue = ref<String>("");
 let editedValue = ref<String>("");
 let isInputEditing = ref<Boolean>(false);
 const editInput = ref<HTMLInputElement>();
 
+//FUNCTIONS
+const clearCompleted = () => {
+  emit("clear-completed");
+};
 const deleteTodo = (todo: Todo) => {
   emit("delete-todo", todo);
 };
 const addTodo = () => {
   emit("add-todo", {
     id: uuidv4(),
-    title: inputValue.value,
+    title: inputValue.value.trim(),
+    isDone: false,
   });
   inputValue.value = "";
 };
@@ -25,20 +53,20 @@ const editTodo = (todo: Todo) => {
     title: editedValue.value,
   });
   editedValue.value = "";
-  isInputEditing.value = !isInputEditing.value
+  isInputEditing.value = !isInputEditing.value;
 };
 const setTodoToDone = (todo: Todo) => {
-  todo.isDone = !todo.isDone;
+  emit("set-todo-to-done", todo.id);
 };
 const setIsInputEditing = () => {
   isInputEditing.value = !isInputEditing.value;
 };
-const props = defineProps({
-  todos: {
-    type: Array,
-    required: true,
-  },
-});
+const displayEditingInput = () => {
+  isInputEditing.value = !isInputEditing.value;
+};
+const sendFilterTodosEmit = (value: String) => {
+  emit("filter-todos", value);
+};
 </script>
 
 <template>
@@ -66,12 +94,16 @@ const props = defineProps({
           class="done-icon"
           @click="setTodoToDone(todo)"
         ></div>
-        <span class="content" :class="{ done: todo.isDone }">{{
-          todo.title
-        }}</span>
+        <span
+          @dbclick="displayEditingInput"
+          class="content"
+          :class="{ done: todo.isDone }"
+          >{{ todo.title }}</span
+        >
         <input
           ref="editInput"
           v-model="editedValue"
+          :class="{ show: isInputEditing.value, hide: !isInputEditing.value }"
           class="edit-input"
           type="text"
           @keypress.enter="editTodo(todo)"
@@ -79,6 +111,10 @@ const props = defineProps({
         <button class="btn" @click="deleteTodo(todo)">x</button>
       </li>
     </ul>
+    <TodoListFooter
+      @filter-todos="sendFilterTodosEmit"
+      @clear-completed="clearCompleted"
+    />
   </section>
 </template>
 
@@ -104,7 +140,11 @@ const props = defineProps({
 }
 
 .input:focus {
-  border: 2px solid red;
+  outline: none;
+}
+
+.edit-input:focus {
+  outline: none;
 }
 
 .input::placeholder {
@@ -147,7 +187,6 @@ const props = defineProps({
 }
 
 .list-item {
-  list-style-type: none;
   position: relative;
   padding: 16px 50px 16px 10px;
   display: flex;
@@ -171,6 +210,10 @@ const props = defineProps({
 
 .hide {
   display: none;
+}
+
+.show {
+  display: block;
 }
 
 .green {

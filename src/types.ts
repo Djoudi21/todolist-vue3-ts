@@ -4,3 +4,9 @@ export type Todo = {
   title: String;
   isDone: Boolean;
 };
+
+export type StateShape = {
+  completedTodos: Todo[];
+  todos: Todo[];
+  activeTodos: Todo[];
+};
